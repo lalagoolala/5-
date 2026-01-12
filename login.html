@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-center mb-4">🔐 로그인</h2>
+<form method="POST" action="{{ url_for('login') }}" class="w-50 mx-auto">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    <div class="mb-3">
+        <label for="username" class="form-label">아이디 (이름)</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-success w-100">로그인</button>
+</form>
+{% endblock %}
