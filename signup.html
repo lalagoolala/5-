@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-center mb-4">📝 회원가입</h2>
+<form method="POST" action="{{ url_for('signup') }}" class="w-50 mx-auto">
+    <div class="mb-3">
+        <label for="username" class="form-label">이름</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="예: 홍길동" required>
+    </div>
+    <div class="mb-3">
+        <label for="student_id" class="form-label">학년 반 번호</label>
+        <input type="text" class="form-control" id="student_id" name="student_id" placeholder="예: 5학년 1반 10번" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-warning text-white">가입하기</button>
+    </div>
+</form>
+{% endblock %}
