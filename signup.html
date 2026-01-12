@@ -1,22 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class="text-center mb-4">📝 회원가입</h2>
-<form method="POST" action="{{ url_for('signup') }}" class="w-50 mx-auto">
-    <div class="mb-3">
-        <label for="username" class="form-label">이름</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="예: 홍길동" required>
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 fw-bold text-warning">📝 회원가입</h2>
+                
+                <form method="POST" action="{{ url_for('signup') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-bold">이름</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="예: 홍길동" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label fw-bold">학년 반 번호</label>
+                        <input type="text" class="form-control form-control-lg" id="student_id" name="student_id" placeholder="예: 5학년 1반 10번" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold">비밀번호</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning text-white w-100 btn-lg fw-bold mb-3">가입하기</button>
+
+                    <div class="text-center text-muted mb-3">또는</div>
+
+                    <button type="button" id="google-signup-btn" class="btn btn-outline-danger w-100 btn-lg fw-bold">
+                        <span class="me-2">G</span> 구글 계정으로 시작하기
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="student_id" class="form-label">학년 반 번호</label>
-        <input type="text" class="form-control" id="student_id" name="student_id" placeholder="예: 5학년 1반 10번" required>
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">비밀번호</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-warning text-white">가입하기</button>
-    </div>
-</form>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAbrKzSRUq1_Qi15yzK3aYKhOLSlhSm-2k",
+    authDomain: "homepage-63d32.firebaseapp.com",
+    projectId: "homepage-63d32",
+    storageBucket: "homepage-63d32.firebasestorage.app",
+    messagingSenderId: "515012802016",
+    appId: "1:515012802016:web:4c3db8588aa7f00df8a785",
+    measurementId: "G-7YVL6MDXNJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  document.getElementById('google-signup-btn').addEventListener('click', async () => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        const response = await fetch('/google_login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user.displayName, email: user.email })
+        });
+
+        if (response.ok) {
+            window.location.href = "/";
+        }
+    } catch (error) {
+        console.error(error);
+        alert("가입 중 오류가 발생했습니다.");
+    }
+  });
+</script>
 {% endblock %}
