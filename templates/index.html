@@ -7,7 +7,7 @@
     <p class="lead mb-4" style="font-size: 1.3rem; color: #666;">우리들의 건강을 지키는 5학년 보건수업 홈페이지입니다.</p>
     <hr class="my-4" style="border: 2px solid #ff6b6b;">
     
-    {% if not session.get('user') %}
+    {% if not session.get('user_email') %}
     <div class="alert alert-info mb-4" style="background: linear-gradient(90deg, #667eea, #764ba2); border: none; color: white; font-size: 1.1rem; border-radius: 15px;">
         <p class="mb-0">🎉 <strong>로그인이나 회원가입을 하면 더 많은 기능을 사용할 수 있습니다!</strong></p>
     </div>
@@ -34,7 +34,7 @@
         </div>
     </div>
     
-    {% if not session.get('user') %}
+    {% if not session.get('user_email') %}
     <div class="row mt-4">
         <div class="col-md-6 offset-md-3">
             <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 30px; text-align: center;">
