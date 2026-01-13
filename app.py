@@ -12,9 +12,20 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 # 보안을 위해 환경 변수에서 키를 가져오거나, 없을 경우 기본값을 사용합니다.
 app.secret_key = os.environ.get('SECRET_KEY', 'health_class_secret_key')
 
-# 정적 파일 캐시 무효화 설정
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # 캐시 비활성화 (개발용)
-# 또는 프로덕션에서: app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+# 정적 파일 캐시 무효화 설정 (프로덕션에서도 캐시 비활성화)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # 템플릿 자동 새로고침
+
+# HTTP 캐시 헤더 설정 - 무조건 새로 로드하도록 강제
+@app.after_request
+def set_no_cache(response):
+    """브라우저 캐시 비활성화 - 항상 서버에서 최신 버전을 받도록"""
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, public, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    response.headers['Last-Modified'] = datetime.now().strftime('%a, %d %b %Y %H:%M:%S GMT')
+    response.headers['ETag'] = None  # ETag 비활성화
+    return response
 
 # 캐시 무효화를 위한 버전 추가
 app.version = datetime.now().strftime('%Y%m%d%H%M%S')

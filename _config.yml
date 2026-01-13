@@ -1,0 +1,8 @@
+# GitHub Pages Disabled
+# This repository is a Flask web application
+# Deploy using Heroku, Railway, or similar platforms
+
+theme: null
+plugins: []
+exclude: [venv, env, .env, .env.example, __pycache__, .git, node_modules]
+
