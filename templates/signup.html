@@ -12,9 +12,20 @@
                 </div>
                 
                 <form method="POST" action="{{ url_for('signup') }}">
+                    {% if error %}
+                    <div class="alert alert-danger text-center fw-bold border-2" role="alert" style="border-radius: 10px;">
+                        ⚠️ {{ error }}
+                    </div>
+                    {% endif %}
+
                     <div class="mb-3">
-                        <label for="username" class="form-label fw-bold" style="color: #ff8c42; font-size: 1.1rem;">👤 이름</label>
-                        <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="예: 홍길동" required style="border: 2px solid #ff8c42; border-radius: 10px; padding: 12px;">
+                        <label for="name" class="form-label fw-bold" style="color: #ff8c42; font-size: 1.1rem;">👤 이름</label>
+                        <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="예: 홍길동" required style="border: 2px solid #ff8c42; border-radius: 10px; padding: 12px;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold" style="color: #ff8c42; font-size: 1.1rem;">📧 이메일</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="예: hongildong@email.com" required style="border: 2px solid #ff8c42; border-radius: 10px; padding: 12px;">
                     </div>
                     
                     <div class="mb-3">

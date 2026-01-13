@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from dotenv import load_dotenv
 import pyrebase
+import re
 import os
 
 # .env 파일에서 환경 변수 로드
@@ -25,20 +26,38 @@ firebaseConfig = {
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
 
+# 이메일 형식 검증
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+# 이메일로 사용자 조회
+def find_user_by_email(email):
+    try:
+        users = db.child("users").get()
+        if users.val():
+            for user in users.each():
+                if user.val().get("email") == email:
+                    return user.val(), user.key()
+    except Exception as e:
+        print(f"사용자 조회 오류: {e}")
+    return None, None
+
 # 관리자 계정 확인 및 생성 함수
 def create_admin():
     try:
-        users = db.child("users").get()
-        admin_exists = False
-        if users.val():
-            for user in users.each():
-                if user.val().get("username") == "abc":
-                    admin_exists = True
-                    break
+        admin_email = "admin@health-class.com"
+        user, _ = find_user_by_email(admin_email)
         
-        if not admin_exists:
-            print("관리자 계정(abc)을 생성합니다.")
-            db.child("users").push({"username": "abc", "password": "1234", "student_id": "관리자"})
+        if not user:
+            print("관리자 계정을 생성합니다.")
+            db.child("users").push({
+                "name": "관리자",
+                "email": admin_email,
+                "password": "admin1234",
+                "student_id": "관리자",
+                "login_method": "email"
+            })
     except Exception as e:
         print(f"관리자 계정 생성 중 오류: {e}")
 
@@ -52,29 +71,33 @@ def index():
 def signup():
     if request.method == 'POST':
         try:
-            username = request.form.get('username', '').strip()
+            name = request.form.get('name', '').strip()
+            email = request.form.get('email', '').strip()
             password = request.form.get('password', '').strip()
             student_id = request.form.get('student_id', '').strip()
             
             # 입력값 검증
-            if not username or not password or not student_id:
+            if not name or not email or not password or not student_id:
                 return render_template('signup.html', error="모든 필드를 입력해주세요.")
             
-            if len(password) < 4:
-                return render_template('signup.html', error="비밀번호는 4자 이상이어야 합니다.")
+            if not is_valid_email(email):
+                return render_template('signup.html', error="올바른 이메일 형식을 입력해주세요.")
             
-            # 중복 아이디 확인
-            users = db.child("users").get()
-            if users.val():
-                for user in users.each():
-                    if user.val().get("username") == username:
-                        return render_template('signup.html', error="이미 사용 중인 아이디입니다.")
+            if len(password) < 6:
+                return render_template('signup.html', error="비밀번호는 6자 이상이어야 합니다.")
+            
+            # 중복 이메일 확인
+            existing_user, _ = find_user_by_email(email)
+            if existing_user:
+                return render_template('signup.html', error="이미 가입된 이메일입니다.")
             
             # 새 사용자 추가
             data = {
-                "username": username,
+                "name": name,
+                "email": email,
                 "password": password,
-                "student_id": student_id
+                "student_id": student_id,
+                "login_method": "email"
             }
             db.child("users").push(data)
             return redirect(url_for('login'))
@@ -89,22 +112,21 @@ def signup():
 def login():
     if request.method == 'POST':
         try:
-            username = request.form.get('username', '').strip()
+            email = request.form.get('email', '').strip()
             password = request.form.get('password', '').strip()
             
-            if not username or not password:
-                return render_template('login.html', error="아이디와 비밀번호를 입력해주세요.")
+            if not email or not password:
+                return render_template('login.html', error="이메일과 비밀번호를 입력해주세요.")
             
             # Firebase에서 사용자 조회
-            users = db.child("users").get()
-            if users.val():
-                for user in users.each():
-                    u = user.val()
-                    if u.get('username') == username and u.get('password') == password:
-                        session['user'] = username
-                        return redirect(url_for('index'))
+            user, _ = find_user_by_email(email)
             
-            return render_template('login.html', error="아이디 또는 비밀번호가 틀렸습니다.")
+            if user and user.get('password') == password:
+                session['user_email'] = email
+                session['user_name'] = user.get('name', '사용자')
+                return redirect(url_for('index'))
+            
+            return render_template('login.html', error="이메일 또는 비밀번호가 틀렸습니다.")
         except Exception as e:
             print(f"로그인 오류: {e}")
             return render_template('login.html', error="로그인 중 오류가 발생했습니다.")
@@ -116,32 +138,28 @@ def login():
 def google_login():
     try:
         data = request.json
-        username = data.get('username')
+        user_name = data.get('username')
         email = data.get('email')
         
-        if not username or not email:
-            return jsonify({"error": "Invalid data"}), 400
+        if not email:
+            return jsonify({"error": "Invalid email"}), 400
         
         # DB에 사용자가 있는지 확인 (이메일 기준)
-        users = db.child("users").get()
-        user_exists = False
-        if users.val():
-            for user in users.each():
-                if user.val().get("email") == email:
-                    user_exists = True
-                    break
+        user, _ = find_user_by_email(email)
         
-        if not user_exists:
+        if not user:
             # 구글 로그인으로 처음 접속한 경우 DB에 자동 저장
             new_user = {
-                "username": username,
+                "name": user_name,
                 "email": email,
+                "password": "google_oauth_user",
                 "student_id": "구글계정",
-                "password": "google_oauth_user" # 비밀번호는 임의 설정
+                "login_method": "google"
             }
             db.child("users").push(new_user)
         
-        session['user'] = username
+        session['user_email'] = email
+        session['user_name'] = user_name
         return jsonify({"status": "success"}), 200
     except Exception as e:
         print(f"구글 로그인 오류: {e}")
@@ -150,7 +168,8 @@ def google_login():
 # 로그아웃
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.pop('user_email', None)
+    session.pop('user_name', None)
     return redirect(url_for('index'))
 
 # 게시판 (공지사항 및 질의응답)
