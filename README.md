@@ -1,20 +1,22 @@
-# 🏥 5학년 보건수업 홈페이지
+# 🏥 5학년 보건교실
 
-> 초등학교 5학년 학생 및 학부모를 위한 **친화적이고 예쁜 보건 수업 홈페이지**
+> 초등학교 5학년을 위한 **정적 HTML 기반 보건 수업 홈페이지**
 
-[![Python 3.x](https://img.shields.io/badge/Python-3.x-blue)](https://www.python.org/)
-[![Flask 2.3](https://img.shields.io/badge/Flask-2.3-green)](https://flask.palletsprojects.com/)
+[![Static HTML](https://img.shields.io/badge/Static-HTML-blue)](https://github.com)
+[![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-green)](https://pages.github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## ⚠️ 중요: 이 프로젝트는 GitHub Pages가 아닌 다른 서비스에서 배포됩니다
+## ✅ GitHub Pages에서 직접 배포 가능!
 
-이 프로젝트는 **Flask 웹 애플리케이션**이므로:
-- ❌ GitHub Pages에서 직접 배포 불가능 (정적 사이트만 지원)
-- ✅ Heroku, Railway, PythonAnywhere 등에서 배포 필요
+이 프로젝트는 **순수 정적 HTML/CSS/JavaScript**입니다:
+- ✅ GitHub 계정만 있으면 완료
+- ✅ 외부 서비스 없음 (Firebase, Heroku, Railway 불필요)
+- ✅ 브라우저 로컬 스토리지로 데이터 저장
+- ✅ 무료 호스팅 (GitHub Pages)
 
-**⚡ 빠른 배포**: [QUICK_FIX.md](QUICK_FIX.md) 또는 [DEPLOYMENT.md](DEPLOYMENT.md) 참조
+**⚡ 빠른 시작**: 아래 배포 섹션 참조
 
 ## ✨ 주요 특징
 
