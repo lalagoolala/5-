@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import pyrebase
 import re
 import os
+from datetime import datetime
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -10,6 +11,18 @@ load_dotenv()
 app = Flask(__name__, template_folder='templates', static_folder='static')
 # 보안을 위해 환경 변수에서 키를 가져오거나, 없을 경우 기본값을 사용합니다.
 app.secret_key = os.environ.get('SECRET_KEY', 'health_class_secret_key')
+
+# 정적 파일 캐시 무효화 설정
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # 캐시 비활성화 (개발용)
+# 또는 프로덕션에서: app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+
+# 캐시 무효화를 위한 버전 추가
+app.version = datetime.now().strftime('%Y%m%d%H%M%S')
+
+@app.context_processor
+def inject_version():
+    """모든 템플릿에서 사용할 수 있는 버전 정보 제공"""
+    return {'version': app.version}
 
 # Firebase 설정 (제공된 정보 + databaseURL 추가)
 firebaseConfig = {
@@ -199,4 +212,9 @@ def board(board_type):
 
 if __name__ == '__main__':
     create_admin() # 앱 시작 시 관리자 계정 확인/생성
-    app.run(debug=True)
+    
+    # 포트 설정 (로컬 개발용)
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

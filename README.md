@@ -150,6 +150,32 @@ health-class-homepage/
 3. 브랜치에 Push 합니다 (`git push origin feature/AmazingFeature`)
 4. Pull Request를 생성합니다
 
+## 🆘 문제 해결
+
+### 홈페이지가 업데이트되지 않는 경우
+
+1. **브라우저 캐시 클리어**: `Ctrl + Shift + Delete` (Windows) 또는 `Cmd + Shift + Delete` (Mac)
+2. **강제 새로고침**: `Ctrl + F5` (Windows) 또는 `Cmd + Shift + R` (Mac)
+3. **배포 서버 재시작**: 
+   - Heroku: `heroku restart -a your-app-name`
+   - Railway: 대시보드에서 "Redeploy" 클릭
+4. **GitHub 재배포**: 변경사항을 커밋하고 푸시
+
+자세한 해결 방법은 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)를 참고하세요.
+
+## 🚀 배포 방법
+
+- [Heroku 배포](DEPLOYMENT.md#1-heroku-권장) - 가장 간단한 방법
+- [Railway 배포](DEPLOYMENT.md#2-railway)
+- [PythonAnywhere 배포](DEPLOYMENT.md#3-pythonanywhere)
+- [Google Cloud Run 배포](DEPLOYMENT.md#4-google-cloud-run)
+
+자세한 배포 가이드는 [DEPLOYMENT.md](DEPLOYMENT.md)를 참고하세요.
+
+## 💻 로컬 설정 및 실행
+
+로컬 환경에서 개발하려면 [LOCAL_SETUP.md](LOCAL_SETUP.md)를 따르세요.
+
 ## 📧 문의 및 피드백
 
 문제가 생기거나 개선 사항이 있으시면 [이슈](https://github.com/yourusername/health-class-homepage/issues)를 등록해주세요.
