@@ -61,15 +61,9 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAbrKzSRUq1_Qi15yzK3aYKhOLSlhSm-2k",
-    authDomain: "homepage-63d32.firebaseapp.com",
-    projectId: "homepage-63d32",
-    storageBucket: "homepage-63d32.firebasestorage.app",
-    messagingSenderId: "515012802016",
-    appId: "1:515012802016:web:4c3db8588aa7f00df8a785",
-    measurementId: "G-7YVL6MDXNJ"
-  };
+  // 서버에서 Firebase 설정 동적으로 로드
+  const response = await fetch('/api/firebase-config');
+  const firebaseConfig = await response.json();
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);

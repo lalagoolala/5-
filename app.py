@@ -24,16 +24,15 @@ def inject_version():
     """모든 템플릿에서 사용할 수 있는 버전 정보 제공"""
     return {'version': app.version}
 
-# Firebase 설정 (제공된 정보 + databaseURL 추가)
+# Firebase 설정 (환경 변수에서 로드)
 firebaseConfig = {
-  "apiKey": "AIzaSyAbrKzSRUq1_Qi15yzK3aYKhOLSlhSm-2k",
-  "authDomain": "homepage-63d32.firebaseapp.com",
-  "projectId": "homepage-63d32",
-  "storageBucket": "homepage-63d32.firebasestorage.app",
-  "messagingSenderId": "515012802016",
-  "appId": "1:515012802016:web:4c3db8588aa7f00df8a785",
-  "measurementId": "G-7YVL6MDXNJ",
-  "databaseURL": "https://homepage-63d32-default-rtdb.firebaseio.com"
+  "apiKey": os.environ.get('FIREBASE_API_KEY'),
+  "authDomain": os.environ.get('FIREBASE_AUTH_DOMAIN'),
+  "projectId": os.environ.get('FIREBASE_PROJECT_ID'),
+  "storageBucket": os.environ.get('FIREBASE_STORAGE_BUCKET'),
+  "messagingSenderId": os.environ.get('FIREBASE_MESSAGING_SENDER_ID'),
+  "appId": os.environ.get('FIREBASE_APP_ID'),
+  "databaseURL": os.environ.get('FIREBASE_DATABASE_URL')
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
@@ -78,6 +77,19 @@ def create_admin():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# Firebase 설정 정보 제공 (클라이언트에서 사용)
+@app.route('/api/firebase-config')
+def firebase_config():
+    config = {
+        "apiKey": os.environ.get('FIREBASE_API_KEY'),
+        "authDomain": os.environ.get('FIREBASE_AUTH_DOMAIN'),
+        "projectId": os.environ.get('FIREBASE_PROJECT_ID'),
+        "storageBucket": os.environ.get('FIREBASE_STORAGE_BUCKET'),
+        "messagingSenderId": os.environ.get('FIREBASE_MESSAGING_SENDER_ID'),
+        "appId": os.environ.get('FIREBASE_APP_ID')
+    }
+    return jsonify(config)
 
 # 회원가입
 @app.route('/signup', methods=['GET', 'POST'])
